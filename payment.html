@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Method | SPM Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Import existing variables */
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #2d3436;
+            --background-light: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 3rem;
+            --spacing-xl: 5rem;
+            --border-radius: 20px;
+            --transition-speed: 0.3s;
+            --gradient-primary: linear-gradient(135deg, #000000, #2d3436);
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Navigation styles (copy from existing) */
+        nav {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 70px; /* Fixed height for nav */
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Payment specific styles */
+        .payment-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: var(--spacing-lg);
+        }
+
+        .order-summary {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .order-summary h2 {
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-color);
+        }
+
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .payment-methods {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .payment-methods h2 {
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-color);
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border: 2px solid #eee;
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .payment-option img {
+            width: 50px;
+            margin-right: var(--spacing-md);
+        }
+
+        .payment-option.selected {
+            border: 2px solid var(--primary-color);
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .proceed-button {
+            background: var(--primary-color);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all var(--transition-speed) ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-top: var(--spacing-md);
+            opacity: 0.5;
+        }
+
+        .proceed-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 768px) {
+            .payment-container {
+                margin: 100px var(--spacing-md);
+            }
+        }
+
+        .payment-option[onclick="selectPayment('ewallet')"] {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .payment-option[onclick="selectPayment('ewallet')"]:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Contact Dropdown Styles */
+        .contact-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .contact-trigger {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding: var(--spacing-xs) 0;
+        }
+
+        .contact-trigger::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 1.5px;
+            transition: width var(--transition-speed) ease;
+        }
+
+        .contact-trigger:hover::after {
+            width: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 8px;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0,0,0,0.04);
+        }
+
+        .contact-dropdown:hover .dropdown-content {
+            display: block;
+            animation: dropdownFade 0.2s ease;
+        }
+
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .dropdown-content a:hover {
+            background: var(--background-light);
+            transform: translateX(5px);
+        }
+
+        .dropdown-content i {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .dropdown-content i.fa-whatsapp {
+            color: #25D366;
+        }
+
+        .dropdown-content i.fa-telegram {
+            color: #0088cc;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bank-details {
+            background: var(--background-light);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin: var(--spacing-md) 0;
+        }
+
+        .bank-details p {
+            margin: var(--spacing-xs) 0;
+            font-size: 1.1rem;
+        }
+
+        .bank-details strong {
+            color: var(--primary-color);
+            margin-right: var(--spacing-sm);
+        }
+
+        .payment-method .cta-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            background: var(--primary-color);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .payment-method .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .payment-method .cta-button i {
+            font-size: 1.2rem;
+        }
+
+        .transaction-advice {
+            background: var(--background-light);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border: 2px solid var(--primary-color);
+        }
+
+        .transaction-advice h2 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .advice-content {
+            color: var(--text-primary);
+        }
+
+        .advice-content ol {
+            margin: var(--spacing-md) 0;
+            padding-left: var(--spacing-lg);
+        }
+
+        .advice-content li {
+            margin: var(--spacing-xs) 0;
+            line-height: 1.5;
+        }
+
+        .note {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: rgba(0,0,0,0.05);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-md);
+        }
+
+        .note i {
+            color: #ff9800;
+            font-size: 1.2rem;
+        }
+
+        .note p {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        #fpx-details {
+            margin-top: var(--spacing-md);
+            animation: fadeIn 0.3s ease;
+        }
+
+        #fpx-details .cta-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            background: linear-gradient(135deg, #0066CC, #004C99); /* Blue colors */
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            width: 100%;
+            max-width: 300px;
+            margin: var(--spacing-md) auto;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+        }
+
+        #fpx-details .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.3);
+            background: linear-gradient(135deg, #004C99, #003366);
+        }
+
+        #fpx-details .cta-button i {
+            font-size: 1.3rem;
+            margin-right: var(--spacing-xs);
+        }
+
+        #fpx-details.bank-details {
+            background: white;
+            border: 2px solid #f0f0f0;
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #fpx-details.bank-details p {
+            font-size: 1.2rem;
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        #fpx-details.bank-details p:last-of-type {
+            border-bottom: none;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Add these styles for the TNG button */
+        #tng-details .cta-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            background: linear-gradient(135deg, #0066CC, #004C99); /* Blue colors */
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            width: 100%;
+            max-width: 300px;
+            margin: var(--spacing-md) auto;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+        }
+
+        #tng-details .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.3);
+            background: linear-gradient(135deg, #004C99, #003366);
+        }
+
+        #tng-details .cta-button i {
+            font-size: 1.3rem;
+            margin-right: var(--spacing-xs);
+        }
+
+        #tng-details.bank-details {
+            background: white;
+            border: 2px solid #f0f0f0;
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #tng-details.bank-details p {
+            font-size: 1.2rem;
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        #tng-details.bank-details p:last-of-type {
+            border-bottom: none;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .payment-instructions {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .bank-info {
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--background-light);
+            border-radius: var(--border-radius);
+        }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .detail-row {
+            margin: 0.5rem 0;
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+        }
+
+        .steps {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .steps ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+        }
+
+        .steps li {
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+
+        .contact-reminder {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .contact-methods {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.2s ease;
+        }
+
+        .contact-link i {
+            font-size: 1.2rem;
+        }
+
+        .contact-link:nth-child(1) { background: #25D366; }
+        .contact-link:nth-child(2) { background: #0088cc; }
+
+        .contact-link:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Add styling for e-wallet section */
+        .bank-info:nth-child(2) .info-card {
+            background: #f0f8ff;
+        }
+
+        .bank-info:nth-child(2) i {
+            color: #0088cc;
+        }
+
+        /* Add e-wallet specific styling */
+        .ewallet-card {
+            background: #f8faff;
+            border: 1px solid #0088cc20;
+        }
+
+        .ewallet-card i {
+            color: #0088cc;
+        }
+
+        .ewallet-card .detail-label {
+            color: #2d3436;
+        }
+
+        .ewallet-card .detail-value {
+            color: #0066cc;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Wits Wisdom</div>
+        <div class="nav-links">
+            <a href="homepage.html#features">Features</a>
+            <a href="subjects.html">Subjects</a>
+            <a href="about.html">About Us</a>
+            <div class="contact-dropdown">
+                <a href="#" class="contact-trigger">Contact</a>
+                <div class="dropdown-content">
+                    <a href="https://wa.me/601110890755" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="https://t.me/+601110890755" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        <span>Telegram</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="payment-container">
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="order-details">
+                <span>Subject:</span>
+                <span id="subject-name">Not selected</span>
+            </div>
+            <div class="order-details">
+                <span>Amount:</span>
+                <span id="subject-price">RM 0.00</span>
+            </div>
+        </div>
+
+        <div class="transaction-advice">
+            <h2><i class="fas fa-info-circle"></i> Important Notice</h2>
+            <div class="advice-content">
+                <p>Please follow these steps after your transaction:</p>
+                <ol>
+                    <li>Take a screenshot of your transaction receipt</li>
+                    <li>Contact us through WhatsApp or Telegram (click Contact at the top)</li>
+                    <li>Send us your transaction screenshot</li>
+                    <li>We will verify and provide access to your materials within 24 hours</li>
+                </ol>
+                <div class="note">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Note: Transaction proof is required to process your order</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-instructions">
+            <h2>Payment Instructions</h2>
+            
+            <!-- Bank Transfer Section -->
+            <div class="bank-info">
+                <div class="info-card">
+                    <i class="fas fa-university"></i>
+                    <div>
+                        <h3>Bank Transfer</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Bank Name:</span>
+                            <span class="detail-value">CIMB Bank</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Name:</span>
+                            <span class="detail-value">Khoo Li Yuen</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Number:</span>
+                            <span class="detail-value">7073932730</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- E-Wallet Section -->
+            <div class="bank-info">
+                <div class="info-card ewallet-card">
+                    <i class="fas fa-wallet"></i>
+                    <div>
+                        <h3>Touch 'n Go eWallet</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Phone Number:</span>
+                            <span class="detail-value">011-10890755</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Name:</span>
+                            <span class="detail-value">GOO SHAO KANG</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Number:</span>
+                            <span class="detail-value">141013163965</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="steps">
+                <h3>How to Complete Payment:</h3>
+                <ol>
+                    <li>Transfer <strong>RM <span id="subject-price">00.00</span></strong> to either account above</li>
+                    <li>Take a clear screenshot of your payment receipt</li>
+                    <li>Send the screenshot to our WhatsApp/Telegram with your name and subject</li>
+                </ol>
+            </div>
+
+            <div class="contact-reminder">
+                <p>After payment, contact us via:</p>
+                <div class="contact-methods">
+                    <a href="https://wa.me/601110890755" target="_blank" class="contact-link">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="https://t.me/+601110890755" target="_blank" class="contact-link">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const subject = urlParams.get('subject');
+            const price = urlParams.get('price');
+
+            // Update subject name
+            const subjectElement = document.getElementById('subject-name');
+            if(subject) {
+                subjectElement.textContent = decodeURIComponent(subject);
+            }
+
+            // Update price
+            const priceElement = document.getElementById('subject-price');
+            if(price) {
+                priceElement.textContent = `RM ${parseFloat(price).toFixed(2)}`;
+            }
+        });
+    </script>
+</body>
+</html> 

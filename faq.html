@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs | STPM Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Copy the :root and basic styles from homepage.html */
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #2d3436;
+            --background-light: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 3rem;
+            --spacing-xl: 5rem;
+            --border-radius: 20px;
+            --transition-speed: 0.3s;
+            --gradient-primary: linear-gradient(135deg, #000000, #2d3436);
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        /* Copy nav styles from homepage.html */
+        nav {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            height: 100%;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding: var(--spacing-xs) 0;
+        }
+
+        /* FAQ specific styles */
+        .faq-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 var(--spacing-md);
+        }
+
+        .faq-container h1 {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            color: var(--primary-color);
+            font-size: 2.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            background: white;
+            padding: var(--spacing-md);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background-color var(--transition-speed) ease;
+        }
+
+        .faq-question:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .faq-question i {
+            transition: transform var(--transition-speed) ease;
+            color: var(--text-secondary);
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+            color: var(--primary-color);
+        }
+
+        .faq-answer {
+            height: 0;
+            padding: 0 var(--spacing-md);
+            opacity: 0;
+            overflow: hidden;
+            transition: all var(--transition-speed) ease;
+            color: var(--text-secondary);
+            visibility: hidden;
+        }
+
+        .faq-item.active .faq-answer {
+            height: auto;
+            padding: var(--spacing-lg);
+            opacity: 1;
+            visibility: visible;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .faq-section h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.5rem;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .payment-methods {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .payment-methods li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .warning {
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .faq-item {
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: transform var(--transition-speed) ease;
+        }
+
+        .faq-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Add animation for smooth expansion */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .faq-item.active .faq-answer {
+            animation: slideDown var(--transition-speed) ease forwards;
+        }
+
+        .copyright-notice {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+        }
+
+        .not-allowed, .allowed {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+        }
+
+        .not-allowed {
+            color: #e74c3c;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .allowed {
+            color: #2ecc71;
+        }
+
+        .not-allowed i, .allowed i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .copyright-notice p {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Contact Dropdown Styles */
+        .contact-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .contact-trigger {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 var(--spacing-sm);
+            position: relative;
+        }
+
+        .contact-trigger::after {
+            content: '\f078';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-dropdown:hover .contact-trigger::after {
+            transform: rotate(180deg);
+        }
+
+        /* Ensure all nav items have same vertical alignment */
+        .nav-links > * {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 8px;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0,0,0,0.04);
+        }
+
+        .contact-dropdown:hover .dropdown-content {
+            display: block;
+            animation: dropdownFade 0.2s ease;
+        }
+
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .dropdown-content a:hover {
+            background: var(--background-light);
+            transform: translateX(5px);
+        }
+
+        .dropdown-content i {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .dropdown-content i.fa-whatsapp {
+            color: #25D366;
+        }
+
+        .dropdown-content i.fa-telegram {
+            color: #0088cc;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Wits Wisdom</div>
+        <div class="nav-links">
+            <a href="homepage.html#features">Features</a>
+            <a href="subjects.html">Subjects</a>
+            <a href="about.html">About Us</a>
+            <div class="contact-dropdown">
+                <a href="#" class="contact-trigger">Contact</a>
+                <div class="dropdown-content">
+                    <a href="https://wa.me/601110890755" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="https://t.me/+601110890755" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        <span>Telegram</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="faq-container">
+        <h1>Frequently Asked Questions</h1>
+        
+        <div class="faq-section">
+            <h2><i class="fas fa-download"></i> How to Purchase & Download Notes</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    How do I buy SPM notes?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="steps-list">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <p>Browse the "Subjects" page and select the subjects you need.</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <p>Choose payment methods to checkout.</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <p>Read the important notice before checkout.</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <p>Make a transaction and take a screenshot of your transaction receipt.</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <p>Send the screenshot to our WhatsApp or Telegram. Please mention the subject notes you want and your name.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    What formats are the notes in?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>All notes are in PDF format for easy reading on phones, tablets, and computers.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Can I preview the notes before buying?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! Each subject has a free sample preview so you can check the quality before purchasing.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2><i class="fas fa-credit-card"></i> Payment & Refund Policies</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    What payment methods do you accept?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <ul class="payment-methods">
+                        <li><i class="fas fa-university"></i> Online Banking (FPX) – Maybank, CIMB, Public Bank, etc.</li>
+                        <li><i class="fas fa-wallet"></i> E-Wallets – Touch 'n Go</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Do you offer refunds?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p class="warning"><i class="fas fa-exclamation-triangle"></i> Since this is a digital product, we do NOT offer refunds after purchase.</p>
+                    <p>If you experience any issues, contact our support team within 24 hours of purchase.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Can I share or resell the notes?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="copyright-notice">
+                        <div class="not-allowed">
+                            <i class="fas fa-ban"></i>
+                            <p>No, sharing or reselling the notes is strictly prohibited.</p>
+                        </div>
+                        <div class="allowed">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Each purchase is for personal use only and protected by copyright law.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                const wasActive = faqItem.classList.contains('active');
+                
+                // Close all other FAQ items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // Toggle the clicked item
+                if (!wasActive) {
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
